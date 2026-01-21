@@ -27,13 +27,23 @@ const userSchema = new mongoose.Schema(
         },
         role: {
             type: String,
-            enum: ['user', 'admin', 'delivery'],
+            enum: ['user', 'admin', 'vendor'],
             default: 'user',
         },
         isActive: {
             type: Boolean,
             default: true,
         },
+        address: {
+            type: {
+              line1: String,
+              line2: String,
+              city: String,
+              state: String,
+              pincode: String,
+            },
+            default: null,
+          },
     },
     { timestamps: true }
 );

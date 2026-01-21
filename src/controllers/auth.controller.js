@@ -15,7 +15,10 @@ const generateToken = (userId) => {
  */
 exports.register = async (req, res) => {
     try {
-        const { fullName, phone, password } = req.body;
+        const { fullName, phone, password, role } = req.body;
+
+        console.log(fullName, phone, password, role, 'kkkk');
+        
 
         // Validation
         if (!fullName || !phone || !password) {
@@ -32,12 +35,17 @@ exports.register = async (req, res) => {
             });
         }
 
+        const allowedRoles = ['user', 'vendor'];
+        const userRole = allowedRoles.includes(role) ? role : 'user';
+
         // Create user
         const user = await User.create({
             name: fullName,
             phone,
             password,
+            role: userRole,
         });
+
 
         res.status(201).json({
             message: 'User registered successfully',
