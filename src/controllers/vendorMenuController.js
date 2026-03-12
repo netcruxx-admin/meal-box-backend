@@ -1,20 +1,13 @@
 const WeeklyMenu = require('../models/WeeklyMenu');
 
-/**
- * GET vendor weekly menu
- */
+// GET menu
 exports.getWeeklyMenu = async (req, res) => {
     const menu = await WeeklyMenu.findOne({ vendor: req.user._id });
-
-    res.json({
-        menu: menu || null,
-    });
+    res.json({ menu });
 };
 
-/**
- * CREATE / UPDATE weekly menu
- */
-exports.updateWeeklyMenu = async (req, res) => {
+// SAVE / UPDATE menu
+exports.saveWeeklyMenu = async (req, res) => {
     const menu = await WeeklyMenu.findOneAndUpdate(
         { vendor: req.user._id },
         {
