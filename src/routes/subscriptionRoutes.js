@@ -3,11 +3,11 @@ const router = express.Router();
 
 const { protect, authorize } = require("../middlewares/authMiddleware");
 const {
-    getVendorPlans,
-    updateVendorPlans,
+    createSubscription,
+    getMySubscriptions,
 } = require("../controllers/subscriptionController");
 
-router.get("/plans", protect, authorize("vendor"), getVendorPlans);
-router.put("/plans", protect, authorize("vendor"), updateVendorPlans);
+router.post("/subscribe", protect, authorize("user"), createSubscription);
+router.get("/my-subscriptions", protect, getMySubscriptions);
 
 module.exports = router;

@@ -15,7 +15,8 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/vendors', vendorRoutes, subscriptionRoutes);
+app.use('/api/vendors', vendorRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
 
 // Health check
 app.get('/', (req, res) => {

@@ -30,6 +30,12 @@ const vendorProfileSchema = new mongoose.Schema(
 
         serviceAreas: [String],
 
+        foodType: {
+            type: String,
+            enum: ['veg', 'non-veg', 'both'],
+            default: 'both',
+        },
+
         isActive: {
             type: Boolean,
             default: true,

@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 const { getVendorMe, updateVendorMe, getAllVendors, getVendorById } = require('../controllers/vendorController');
-const { getWeeklyMenu, saveWeeklyMenu } = require('../controllers/vendorMenuController');
-const { getVendorPlans, updateVendorPlans } = require('../controllers/subscriptionController');
+const { getWeeklyMenu, saveWeeklyMenu, getVendorMenuById } = require('../controllers/vendorMenuController');
+const { getVendorPlans, updateVendorPlans, getVendorPlansById } = require('../controllers/subscriptionController');
 const { protect, authorize } = require('../middlewares/authMiddleware');
 
 // Public / User app
@@ -22,5 +22,7 @@ router.get('/plans', protect, authorize('vendor'), getVendorPlans);
 router.put('/plans', protect, authorize('vendor'), updateVendorPlans);
 
 router.get('/:id', getVendorById);
+router.get('/:vendorId/menu', getVendorMenuById);
+router.get('/:vendorId/plans', getVendorPlansById);
 
 module.exports = router;

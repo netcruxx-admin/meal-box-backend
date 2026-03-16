@@ -8,10 +8,7 @@ const VendorProfile = require('../models/VendorProfile');
  */
 exports.getAllVendors = async (req, res) => {
   try {
-    const { search, serviceArea } = req.query;
-
-    console.log('✅ ndjksfbjakdsbfjk');
-    
+    const { search, serviceArea, foodType } = req.query;
 
     let query = {};
 
@@ -23,6 +20,11 @@ exports.getAllVendors = async (req, res) => {
     // Filter by service area
     if (serviceArea) {
       query.serviceAreas = serviceArea;
+    }
+
+    // Filter by food type (veg / non-veg / both)
+    if (foodType) {
+      query.foodType = foodType;
     }
 
     const vendors = await VendorProfile.find(query)
@@ -97,6 +99,7 @@ exports.updateVendorMe = async (req, res) => {
       description,
       address,
       serviceAreas,
+      foodType,
     } = req.body;
 
     if (!businessName) {
@@ -105,15 +108,27 @@ exports.updateVendorMe = async (req, res) => {
       });
     }
 
+    const updateData = {
+      user: req.user._id,
+      businessName,
+      description,
+      address,
+      serviceAreas,
+    };
+
+    if (foodType) {
+      const validFoodTypes = ['veg', 'non-veg', 'both'];
+      if (!validFoodTypes.includes(foodType)) {
+        return res.status(400).json({
+          message: 'foodType must be one of: veg, non-veg, both',
+        });
+      }
+      updateData.foodType = foodType;
+    }
+
     const vendor = await VendorProfile.findOneAndUpdate(
       { user: req.user._id },
-      {
-        user: req.user._id,
-        businessName,
-        description,
-        address,
-        serviceAreas,
-      },
+      updateData,
       { new: true, upsert: true }
     ).populate('user', 'name phone role');
 
