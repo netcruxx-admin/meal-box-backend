@@ -30,9 +30,10 @@ exports.register = async (req, res) => {
         // Check if user already exists
         const existingUser = await User.findOne({ phone });
         if (existingUser) {
-            return res.status(400).json({
-                message: 'User already exists with this phone number',
-            });
+            const message = existingUser.role === role
+                ? 'You are already registered. Please login.'
+                : `This number is already registered as a ${existingUser.role}.`;
+            return res.status(400).json({ message });
         }
 
         const allowedRoles = ['user', 'vendor'];
@@ -70,7 +71,7 @@ exports.register = async (req, res) => {
  */
 exports.login = async (req, res) => {
     try {
-        const { phone, password } = req.body;
+        const { phone, password, role } = req.body;
 
         // Validation
         if (!phone || !password) {
@@ -100,6 +101,13 @@ exports.login = async (req, res) => {
         if (!user.isActive) {
             return res.status(403).json({
                 message: 'Your account is disabled',
+            });
+        }
+
+        // Check role if provided — prevent vendors logging in via user app and vice versa
+        if (role && user.role !== role) {
+            return res.status(403).json({
+                message: 'Access denied for this app',
             });
         }
 
