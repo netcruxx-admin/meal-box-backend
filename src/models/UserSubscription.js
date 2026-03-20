@@ -30,8 +30,15 @@ const userSubscriptionSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["active", "completed", "cancelled"],
-      default: "active",
+      enum: [
+        "pending",    // user subscribed, waiting vendor approval
+        "accepted",   // vendor approved
+        "rejected",   // vendor rejected
+        "active",     // (future: when service starts)
+        "completed",
+        "cancelled"
+      ],
+      default: "pending",
     },
   },
   { timestamps: true }

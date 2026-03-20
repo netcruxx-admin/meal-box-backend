@@ -58,7 +58,6 @@ exports.getVendorPlansById = async (req, res) => {
     }
 };
 
-
 exports.createSubscription = async (req, res) => {
     try {
         console.log("createSubscription body:", req.body);
@@ -107,4 +106,54 @@ exports.getMySubscriptions = async (req, res) => {
         console.error("Get my subscriptions error:", error);
         res.status(500).json({ message: "Failed to fetch subscriptions" });
     }
+};
+
+exports.getVendorSubscriptions = async (req, res) => {
+    try {
+        const vendorProfile = await VendorProfile.findOne({ user: req.user._id });
+        if (!vendorProfile) {
+            return res.status(404).json({ message: "Vendor profile not found" });
+        }
+
+        const subs = await UserSubscription.find({
+            vendor: vendorProfile._id,
+        })
+            .populate("user", "name phone address")
+            .sort({ createdAt: -1 });
+
+        res.json({ subscriptions: subs });
+    } catch (error) {
+        console.error("Get vendor subscriptions error:", error);
+        res.status(500).json({ message: "Failed to fetch subscriptions" });
+    }
+};
+
+exports.acceptSubscription = async (req, res) => {
+    const { id } = req.params;
+
+    const sub = await UserSubscription.findByIdAndUpdate(
+        id,
+        { status: "accepted" },
+        { new: true }
+    );
+
+    res.json({
+        message: "Subscription accepted",
+        subscription: sub,
+    });
+};
+
+exports.rejectSubscription = async (req, res) => {
+    const { id } = req.params;
+
+    const sub = await UserSubscription.findByIdAndUpdate(
+        id,
+        { status: "rejected" },
+        { new: true }
+    );
+
+    res.json({
+        message: "Subscription rejected",
+        subscription: sub,
+    });
 };

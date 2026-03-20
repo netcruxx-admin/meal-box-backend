@@ -17,9 +17,6 @@ exports.register = async (req, res) => {
     try {
         const { fullName, phone, password, role } = req.body;
 
-        console.log(fullName, phone, password, role, 'kkkk');
-        
-
         // Validation
         if (!fullName || !phone || !password) {
             return res.status(400).json({
