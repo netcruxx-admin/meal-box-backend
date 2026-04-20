@@ -26,6 +26,13 @@ exports.register = async (req, res) => {
 
         // Check if user already exists
         const existingUser = await User.findOne({ phone });
+
+        if (existingUser && existingUser.isDeleted) {
+            return res.status(400).json({
+              message:
+                "Account with this number was deleted. Please contact support.",
+            });
+          }
         if (existingUser) {
             const message = existingUser.role === role
                 ? 'You are already registered. Please login.'
@@ -83,6 +90,14 @@ exports.login = async (req, res) => {
         if (!user) {
             return res.status(401).json({
                 message: 'Invalid phone or password',
+            });
+        }
+
+        // 🔥 ADD THIS CHECK
+        if (user.isDeleted) {
+            return res.status(403).json({
+                message:
+                    "This account has been deleted. Please contact support for assistance.",
             });
         }
 

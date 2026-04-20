@@ -60,3 +60,21 @@ exports.updateMe = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+exports.deleteAccount = async (req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            { isDeleted: true, deletedAt: new Date(), },
+            { new: true }
+        );
+
+        res.json({
+            message: "Account deleted successfully",
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to delete account",
+        });
+    }
+};

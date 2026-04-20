@@ -1,3 +1,4 @@
+const User = require('../models/User');
 const VendorProfile = require('../models/VendorProfile');
 
 
@@ -28,12 +29,21 @@ exports.getAllVendors = async (req, res) => {
     }
 
     const vendors = await VendorProfile.find(query)
-      .populate('user', 'name phone')
+      .populate({
+        path: 'user',
+        select: 'name phone isDeleted',
+      })
       .sort({ createdAt: -1 });
 
+    // 🔥 FILTER OUT deleted users
+    const filteredVendors = vendors.filter(
+      (v) => v.user && !v.user.isDeleted
+    );
+
+    console.log(filteredVendors, 'filteredVendors');
     res.status(200).json({
-      count: vendors.length,
-      vendors,
+      count: filteredVendors.length,
+      vendors: filteredVendors,
     });
   } catch (error) {
     console.error('Get all vendors error:', error);
@@ -95,6 +105,7 @@ exports.getVendorMe = async (req, res) => {
 exports.updateVendorMe = async (req, res) => {
   try {
     const {
+      name,
       businessName,
       description,
       address,
@@ -103,9 +114,12 @@ exports.updateVendorMe = async (req, res) => {
     } = req.body;
 
     if (!businessName) {
-      return res.status(400).json({
-        message: 'Business name is required',
-      });
+      return res.status(400).json({ message: 'Business name is required' });
+    }
+
+    // 👇 Update user's name if provided                                     
+    if (name && name.trim()) {
+      await User.findByIdAndUpdate(req.user._id, { name: name.trim() });
     }
 
     const updateData = {

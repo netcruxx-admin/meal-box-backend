@@ -96,7 +96,6 @@ exports.createSubscription = async (req, res) => {
 
 exports.getMySubscriptions = async (req, res) => {
     try {
-        console.log("getMySubscriptions user:", req.user?._id);
         const subscriptions = await UserSubscription.find({
             user: req.user._id,
         }).populate("vendor", "businessName foodType address");
