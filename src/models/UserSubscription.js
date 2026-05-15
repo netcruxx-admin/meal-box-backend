@@ -17,9 +17,29 @@ const userSubscriptionSchema = new mongoose.Schema(
     planType: {
       type: String,
       enum: ["weekly", "monthly"],
-      required: true,
     },
 
+    planDuration: {
+      type: String,
+      enum: ["weekly", "monthly"],
+    },
+
+    mealType: {
+      type: String,
+      enum: [
+        "breakfast_only",
+        "lunch_only",
+        "dinner_only",
+        "breakfast_lunch",
+        "breakfast_dinner",
+        "lunch_dinner",
+        "full_day",
+      ],
+    },
+
+    basePrice: Number,
+    finalPrice: Number,
+    discount: Number,
     price: Number,
 
     duration: Number, // days
@@ -31,15 +51,25 @@ const userSubscriptionSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: [
-        "pending",    // user subscribed, waiting vendor approval
-        "accepted",   // vendor approved
-        "rejected",   // vendor rejected
-        "active",     // (future: when service starts)
+        "pending",
+        "accepted",
+        "rejected",
+        "active",
         "completed",
-        "cancelled"
+        "cancelled",
+        "expired",
+        "paused"
       ],
       default: "pending",
     },
+
+    pauseHistory: [
+      {
+        pauseStartDate: { type: Date, required: true },
+        pauseEndDate:   { type: Date, required: true },
+        pausedDays:     { type: Number, required: true },
+      },
+    ],
   },
   { timestamps: true }
 );

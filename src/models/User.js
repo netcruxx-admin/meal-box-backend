@@ -18,7 +18,6 @@ const userSchema = new mongoose.Schema(
         phone: {
             type: String,
             required: true,
-            unique: true,
         },
         password: {
             type: String,
@@ -59,5 +58,7 @@ userSchema.pre('save', async function () {
 userSchema.methods.comparePassword = async function (enteredPassword) {
     return bcrypt.compare(enteredPassword, this.password);
 };
+
+userSchema.index({ phone: 1, role: 1 }, { unique: true });
 
 module.exports = mongoose.model('User', userSchema);

@@ -24,17 +24,14 @@ exports.register = async (req, res) => {
             });
         }
 
-        // Check if user already exists
-        const existingUser = await User.findOne({ phone });
-        if (existingUser) {
-            const message = existingUser.role === role
-                ? 'You are already registered. Please login.'
-                : `This number is already registered as a ${existingUser.role}.`;
-            return res.status(400).json({ message });
-        }
-
         const allowedRoles = ['user', 'vendor'];
         const userRole = allowedRoles.includes(role) ? role : 'user';
+
+        // Check if already registered with same phone + role
+        const existingUser = await User.findOne({ phone, role: userRole });
+        if (existingUser) {
+            return res.status(400).json({ message: 'You are already registered. Please login.' });
+        }
 
         // Create user
         const user = await User.create({
@@ -77,8 +74,9 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Find user & include password
-        const user = await User.findOne({ phone }).select('+password');
+        // Find user by phone + role so each app resolves its own account
+        const query = role ? { phone, role } : { phone };
+        const user = await User.findOne(query).select('+password');
 
         if (!user) {
             return res.status(401).json({
@@ -98,13 +96,6 @@ exports.login = async (req, res) => {
         if (!user.isActive) {
             return res.status(403).json({
                 message: 'Your account is disabled',
-            });
-        }
-
-        // Check role if provided — prevent vendors logging in via user app and vice versa
-        if (role && user.role !== role) {
-            return res.status(403).json({
-                message: 'Access denied for this app',
             });
         }
 

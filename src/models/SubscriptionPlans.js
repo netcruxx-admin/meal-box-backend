@@ -1,5 +1,14 @@
 const mongoose = require("mongoose");
 
+const durationPlanSchema = new mongoose.Schema(
+  {
+    duration: Number,
+    discount: { type: Number, default: 0 },
+    mealPlans: { type: Map, of: Number },
+  },
+  { _id: false }
+);
+
 const planSchema = new mongoose.Schema(
   {
     vendor: {
@@ -8,34 +17,8 @@ const planSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-
-    weekly: {
-      planType: {
-        type: String,
-        enum: ["full_day", "lunch_dinner", "lunch_only"],
-        default: "full_day",
-      },
-      duration: {
-        type: Number,
-        default: 7,
-      },
-      price: Number,
-      discount: Number,
-    },
-
-    monthly: {
-      planType: {
-        type: String,
-        enum: ["full_day", "lunch_dinner", "lunch_only"],
-        default: "full_day",
-      },
-      duration: {
-        type: Number,
-        default: 30,
-      },
-      price: Number,
-      discount: Number,
-    },
+    weekly: durationPlanSchema,
+    monthly: durationPlanSchema,
   },
   { timestamps: true }
 );
