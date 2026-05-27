@@ -5,6 +5,7 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const vendorRoutes = require('./routes/vendorRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/vendors', vendorRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Health check
 app.get('/', (req, res) => {

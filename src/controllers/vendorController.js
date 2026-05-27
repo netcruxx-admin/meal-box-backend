@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const VendorProfile = require('../models/VendorProfile');
+const Review = require('../models/Review');
 
 
 /**
@@ -67,7 +68,27 @@ exports.getVendorById = async (req, res) => {
       });
     }
 
-    res.status(200).json({ vendor });
+    const [ratingAgg, totalReviews, recentReviews] = await Promise.all([
+      Review.aggregate([
+        { $match: { vendor: vendor._id } },
+        { $group: { _id: null, averageRating: { $avg: '$rating' } } },
+      ]),
+      Review.countDocuments({ vendor: vendor._id }),
+      Review.find({ vendor: vendor._id })
+        .populate('user', 'name')
+        .sort({ createdAt: -1 })
+        .limit(3),
+    ]);
+
+    const averageRating =
+      ratingAgg.length > 0 ? Math.round(ratingAgg[0].averageRating * 10) / 10 : 0;
+
+    res.status(200).json({
+      vendor,
+      averageRating,
+      totalReviews,
+      recentReviews,
+    });
   } catch (error) {
     console.error('Get vendor by ID error:', error);
     res.status(500).json({ message: 'Server error' });
